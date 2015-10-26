@@ -125,9 +125,14 @@ class MongoengineNonceMixin(NonceMixin):
 
     @classmethod
     def use(cls, server_url, timestamp, salt):
-        return cls.objects.get_or_create(server_url=server_url,
-                                         timestamp=timestamp,
-                                         salt=salt)[1]
+        try:
+            return cls.objects.get(server_url=server_url,
+                                   timestamp=timestamp,
+                                   salt=salt)
+        except cls.DoesNotExist:
+            return cls.objects.create(server_url=server_url,
+                                      timestamp=timestamp,
+                                      salt=salt)
 
 
 class MongoengineAssociationMixin(AssociationMixin):
